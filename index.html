@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>محاسبه حقوق</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      direction: rtl;
+      padding: 20px;
+    }
+    #root {
+      margin-top: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      margin-top: 5px;
+      padding: 5px;
+      width: 200px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+  <button id="showFormBtn">نمایش فرم</button>
+  <div id="root"></div>
+
+  <script>
+    const root = document.getElementById('root');
+    const showFormBtn = document.getElementById('showFormBtn');
+
+    showFormBtn.addEventListener('click', () => {
+      showFormBtn.disabled = true;
+
+      const form = document.createElement('form');
+
+      function handleEnter(input, nextElement) {
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            nextElement.focus();
+          }
+        });
+      }
+
+      const nameLabel = document.createElement('label');
+      nameLabel.textContent = 'نام:';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.required = true;
+
+      const familyLabel = document.createElement('label');
+      familyLabel.textContent = 'نام خانوادگی:';
+      const familyInput = document.createElement('input');
+      familyInput.type = 'text';
+      familyInput.required = true;
+
+      const degreeLabel = document.createElement('label');
+      degreeLabel.textContent = 'مدرک تحصیلی:';
+      const degreeSelect = document.createElement('select');
+      const degrees = ['دیپلم', 'کارشناسی', 'کارشناسی ارشد', 'دکتری'];
+      degrees.forEach(degree => {
+        const option = document.createElement('option');
+        option.value = degree;
+        option.textContent = degree;
+        degreeSelect.appendChild(option);
+      });
+
+      const hoursLabel = document.createElement('label');
+      hoursLabel.textContent = 'ساعت کاری در ماه:';
+      const hoursInput = document.createElement('input');
+      hoursInput.type = 'number';
+      hoursInput.required = true;
+
+      const taxLabel = document.createElement('label');
+      taxLabel.textContent = 'درصد مالیات:';
+      const taxInput = document.createElement('input');
+      taxInput.type = 'number';
+      taxInput.required = true;
+
+      const calcBtn = document.createElement('button');
+      calcBtn.textContent = 'محاسبه حقوق';
+      calcBtn.type = 'button';
+
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = 'بستن فرم';
+      closeBtn.type = 'button';
+      closeBtn.style.marginRight = '10px';
+
+      const result = document.createElement('h1');
+
+      calcBtn.addEventListener('click', () => {
+        const name = nameInput.value.trim();
+        const family = familyInput.value.trim();
+        const degree = degreeSelect.value;
+        const hours = parseFloat(hoursInput.value);
+        const tax = parseFloat(taxInput.value);
+
+        if (!name || !family || isNaN(hours) || isNaN(tax)) {
+          alert('لطفاً همه مقادیر را به درستی وارد کنید.');
+          return;
+        }
+
+        const baseRate = 100000;
+        const degreeMultiplier = {
+          'دیپلم': 1,
+          'کارشناسی': 1.2,
+          'کارشناسی ارشد': 1.5,
+          'دکتری': 2
+        };
+
+        const grossSalary = hours * baseRate * degreeMultiplier[degree];
+        const netSalary = grossSalary * (1 - tax / 100);
+
+        result.textContent = `حقوق ${name} ${family} با مدرک ${degree} برابر است با ${netSalary.toLocaleString()} تومان`;
+      });
+
+      closeBtn.addEventListener('click', () => {
+        root.innerHTML = '';
+        showFormBtn.disabled = false;
+      });
+
+      
+      handleEnter(nameInput, familyInput);
+      handleEnter(familyInput, degreeSelect);
+      handleEnter(degreeSelect, hoursInput);
+      handleEnter(hoursInput, taxInput);
+      handleEnter(taxInput, calcBtn);
+
+      form.appendChild(nameLabel);
+      form.appendChild(nameInput);
+      form.appendChild(familyLabel);
+      form.appendChild(familyInput);
+      form.appendChild(degreeLabel);
+      form.appendChild(degreeSelect);
+      form.appendChild(hoursLabel);
+      form.appendChild(hoursInput);
+      form.appendChild(taxLabel);
+      form.appendChild(taxInput);
+      form.appendChild(calcBtn);
+      form.appendChild(closeBtn);
+      form.appendChild(result);
+
+      root.appendChild(form);
+    });
+  </script>
+</body>
+</html>
